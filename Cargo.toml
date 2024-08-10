@@ -6,3 +6,21 @@ publish = false
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.86"
+axum = { version = "0.7.5", features = ["http2"] }
+nanoid = "0.4.0"
+serde = { version = "1.0.204", features = ["derive"] }
+sqlx = { version = "0.8.0", features = [
+    "postgres",
+    "runtime-tokio",
+    "tls-rustls",
+] }
+thiserror = "1.0.63"
+tokio = { version = "1.39.2", features = [
+    "macros",
+    "rt-multi-thread",
+    "rt",
+    "net",
+] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
