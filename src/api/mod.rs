@@ -9,6 +9,7 @@ use std::sync::Arc;
 use tokio::net::TcpListener;
 use tracing::info;
 
+mod model;
 mod routes;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;

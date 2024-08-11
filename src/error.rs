@@ -19,7 +19,7 @@ pub enum Error {
 impl From<sqlx::Error> for Error {
     fn from(err: sqlx::Error) -> Self {
         match err {
-            sqlx::Error::RowNotFound => Error::NotFound("url not found".to_string()),
+            sqlx::Error::RowNotFound => Error::NotFound("data not found".to_string()),
             _ => Error::Sqlx(err),
         }
     }

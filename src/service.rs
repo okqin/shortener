@@ -12,20 +12,27 @@ impl Service {
         Self { db, repo }
     }
 
-    pub async fn create_short_url(&self, url: &str) -> Result<String, Error> {
+    pub async fn create_short_url(&self, url: &str) -> Result<Url, Error> {
         let id = nanoid::nanoid!(6);
         let mut url = Url {
             id,
             url: url.to_string(),
         };
-        while self.repo.create_url(&self.db, &url).await.is_err() {
-            url.id = nanoid::nanoid!(6);
+
+        loop {
+            match self.repo.create_url(&self.db, &url).await {
+                Ok(row) => {
+                    return Ok(row);
+                }
+                Err(_) => {
+                    url.id = nanoid::nanoid!(6);
+                }
+            }
         }
-        Ok(url.id)
     }
 
-    pub async fn get_original_url(&self, id: &str) -> Result<String, Error> {
+    pub async fn get_original_url(&self, id: &str) -> Result<Url, Error> {
         let url = self.repo.get_url_by_id(&self.db, id).await?;
-        Ok(url.url)
+        Ok(url)
     }
 }

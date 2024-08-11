@@ -5,18 +5,9 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use serde::{Deserialize, Serialize};
 use tracing::instrument;
 
-#[derive(Debug, Deserialize)]
-struct ShortenRequest {
-    url: String,
-}
-
-#[derive(Debug, Serialize)]
-struct ShortenResponse {
-    url: String,
-}
+use super::model::{ShortenRequest, ShortenResponse};
 
 pub fn router() -> Router<ApiContext> {
     Router::new()
@@ -24,21 +15,20 @@ pub fn router() -> Router<ApiContext> {
         .route("/:id", get(get_original_url))
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 async fn create_short_url(
     State(ctx): State<ApiContext>,
     Json(url): Json<ShortenRequest>,
 ) -> Result<Json<ShortenResponse>> {
-    let id = ctx.service.create_short_url(&url.url).await?;
-    let url = format!("http://127.0.0.1:8080/{}", id);
-    Ok(Json(ShortenResponse { url }))
+    let url = ctx.service.create_short_url(&url.url).await?;
+    Ok(Json(url.into()))
 }
 
-#[instrument]
+#[instrument(skip(ctx))]
 async fn get_original_url(
     State(ctx): State<ApiContext>,
     Path(id): Path<String>,
 ) -> Result<Redirect> {
     let url = ctx.service.get_original_url(&id).await?;
-    Ok(Redirect::permanent(&url))
+    Ok(url.into())
 }

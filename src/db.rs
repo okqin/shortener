@@ -1,5 +1,6 @@
 use crate::config;
 use crate::Error;
+use anyhow::Context;
 use sqlx::{postgres::PgPoolOptions, Executor, PgPool};
 use std::time::Duration;
 
@@ -13,7 +14,8 @@ pub async fn connect(database: &config::Database) -> Result<DB, Error> {
         .max_connections(database.pool_size)
         .max_lifetime(Duration::from_secs(30 * 60))
         .connect(&database.url)
-        .await?;
+        .await
+        .context("could not connect to database_url")?;
     sqlx::query(
         "CREATE TABLE IF NOT EXISTS urls (id CHAR(6) PRIMARY KEY, url TEXT NOT NULL UNIQUE)",
     )
