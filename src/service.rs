@@ -21,7 +21,7 @@ impl Service {
         while self.repo.create_url(&self.db, &url).await.is_err() {
             url.id = nanoid::nanoid!(6);
         }
-        Ok(url.url)
+        Ok(url.id)
     }
 
     pub async fn get_original_url(&self, id: &str) -> Result<String, Error> {
