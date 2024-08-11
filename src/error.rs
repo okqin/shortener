@@ -9,6 +9,9 @@ pub enum Error {
     #[error("Internal error")]
     Internal(String),
 
+    #[error("an error occurred with the IO")]
+    Io(#[from] std::io::Error),
+
     #[error("an error occurred with the database")]
     Sqlx(sqlx::Error),
 

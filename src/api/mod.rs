@@ -19,7 +19,7 @@ pub struct ApiContext {
     pub service: Arc<Service>,
 }
 
-pub async fn serve(conf: Config) -> anyhow::Result<()> {
+pub async fn serve(conf: Config) -> Result<()> {
     let listener = TcpListener::bind(&conf.server_addr).await?;
     info!("Server listening on: {}", &conf.server_addr);
 
@@ -33,7 +33,8 @@ pub async fn serve(conf: Config) -> anyhow::Result<()> {
 
     axum::serve(listener, app)
         .await
-        .context("error running HTTP server")
+        .context("error running HTTP server")?;
+    Ok(())
 }
 
 fn api_router() -> Router<ApiContext> {
@@ -46,6 +47,7 @@ impl Error {
             Self::NotFound(_) => StatusCode::NOT_FOUND,
             Self::InvalidArgument(_) => StatusCode::BAD_REQUEST,
             Self::Internal(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::Io(_) => StatusCode::INTERNAL_SERVER_ERROR,
             Self::Sqlx(_) | Self::Anyhow(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
